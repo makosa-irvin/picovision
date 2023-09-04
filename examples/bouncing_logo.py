@@ -3,6 +3,7 @@ import random
 import errno
 from picographics import PicoGraphics, DISPLAY_PICOVISION, PEN_DV_RGB555 as PEN
 from machine import Pin
+import uasyncio as asyncio 
 
 """
 Pimoroni logo bouncing around on the screen
