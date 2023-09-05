@@ -1,9 +1,13 @@
 import struct
 import aioble
-import asyncio
+import uasyncio as asyncio
 import bluetooth
 from micropython import const
 
+"""
+Handle connections to the Enviro Indoor and Weather sensors via BLE
+
+"""
 # org.bluetooth.service.environmental_sensing
 ENVIRONMENTAL_SENSING = bluetooth.UUID(0x181A)
 
@@ -13,19 +17,16 @@ HUMIDITY = const(0x2A6F)
 RAIN = const(0x2A78)
 IRRADIANCE = const(0x2A77)   # It's not Lux, but it'll do for now
 
-
+# Helpers to decode the temperature, light, pressure and humidity readings
 def _decode_temperature(data):
     return struct.unpack("<h", data)[0] / 100.0
-
 
 def _decode_light(data):
     # 0.1 W/m2
     return struct.unpack("<h", data)[0] / 10.0
 
-
 def _decode_pressure(data):
     return struct.unpack("<h", data)[0] / 10.0
-
 
 def _decode_humidity(data):
     # uint16t: % with a resolution of 0.01
@@ -81,13 +82,22 @@ class Sensor:
             self.dptr += 1
         
     def avg(self):
+        """
+        Calculate the minimum, maximum and average readings
+        """
         if self.dptr == 0:
             return 0
         v = 0
+        max_reading = 0
+        min_reading = self.dlog[0]
         # Avoid using sum(self.dlog[:self.dptr]) since it allocates memory
         for i in range(self.dptr):
+            if self.dlog[i] > max_reading:
+                max_reading = self.dlog[i]
+            elif self.dlog[i] < min_reading:
+                min_reading = self.dlog[i]
             v += self.dlog[i]
-        return v / self.dptr
+        return (v / self.dptr), max_reading, min_reading
 
     def get_scaled(self, index, scale=1.0):
         value = self.dlog[index]
@@ -113,12 +123,21 @@ class Sensor:
             graphics.rectangle(x + bar_x, y + h - reading, bar_width, reading)
             bar_x += bar_spacing
 
-        gavg = self.avg()
+        gavg, gmax, gmin = self.avg()
         graphics.set_pen(caption_color)
         graphics.text(f"{self.caption}", x , y, scale=2)
         graphics.text(f"avg: {gavg:.2f}", x, y + 16, scale=1)
+        graphics.text(f"max: {gmax:.2f}", x, y + 32, scale=1)
+        graphics.text(f"min: {gmin:.2f}", x, y + 48, scale=1)
 
-
+    def get_current_reading(self, graphics):
+        gavg, gmax, gmin = self.avg()
+        current_val = self.dlog[self.dptr-1]
+        graphics.text(f"{current_val}", 100, 100, scale=2)
+        if current_val is None:
+            return "No reading yet"
+        
+        return current_val
 class Device:
     def __init__(self, name, *args):
         self.uuid = ENVIRONMENTAL_SENSING

@@ -60,7 +60,7 @@ async def refresh_display():
 
     GW = W - 4
     GH = H - 4
-
+    
     device.sensors[0].draw_graph(graphics, 0+2, 0+2, GW, GH, BLUE, WHITE)
     device.sensors[1].draw_graph(graphics, W+2, 0+2, GW, GH, RED, WHITE)
     device.sensors[2].draw_graph(graphics, 0+2, H+2, GW, GH, GREEN, WHITE)
@@ -68,6 +68,7 @@ async def refresh_display():
 
     print("Display update...")
     graphics.update()
+
 
 
 asyncio.run(main())
