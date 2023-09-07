@@ -130,9 +130,10 @@ class Sensor:
         graphics.text(f"max: {gmax:.2f}", x, y + 32, scale=1)
         graphics.text(f"min: {gmin:.2f}", x, y + 48, scale=1)
 
-    def get_current_reading(self, graphics):
+    def get_current_reading(self):
         gavg, gmax, gmin = self.avg()
         current_val = self.dlog[self.dptr-1]
+
         if current_val is None:
             return "No reading yet"
         
