@@ -133,7 +133,7 @@ def calculate_bearing(d):
 def display_forecast(x, y):
     
     graphics.set_pen(GREEN)
-    graphics.rectangle(x, y, WIDTH//3, HEIGHT)
+    graphics.rectangle(x, y, WIDTH//2, HEIGHT)
     
     # lets have some weather
     graphics.set_pen(WHITE)
@@ -166,8 +166,8 @@ def display_forecast(x, y):
 
 def display_indoor(x, y, light, temp, pressure, hum):
     graphics.set_pen(TEAL)
-    graphics.rectangle(x, y, WIDTH//3, HEIGHT)
-    
+    graphics.rectangle(x, y, WIDTH//2, HEIGHT)
+    draw_house(x + 30, y + 30)
     graphics.set_pen(WHITE)
     graphics.text("INDOOR", x, y, scale=2)
     
@@ -200,6 +200,15 @@ def draw_bluetooth(x,y):
     graphics.line(x + 10, y + 5, x + 5, y)
     graphics.line(x + 10, y + 15, x + 5, y + 20)
     graphics.line(x + 5, y, x + 5, y + 20)
+
+def draw_house(x,y):
+    graphics.set_pen(YELLOW)
+    graphics.line(x, y + 10, x + 15, y)
+    graphics.line(x + 15, y, x + 30, y + 10)
+    graphics.line(x + 5, y + 10, x + 5, y + 30)
+    graphics.line(x + 25, y + 10, x + 25, y + 30)
+    graphics.line(x + 5, y + 30, x + 25, y + 30)
+    
 def draw_header():
     year, month, day, h, min, _, wday, _ = time.localtime()
     
@@ -274,8 +283,8 @@ async def refresh_display():
 #     weather_humidity_reading = devices[1].sensors[3].get_current_reading()
 #     
 #     display_weather(0, 30, weather_light_reading, weather_temp_reading, weather_pressure_reading, weather_humidity_reading)
-    display_forecast(WIDTH//3, 30)
-    display_indoor(WIDTH - WIDTH//3, 30, indoor_light_reading, indoor_temp_reading, indoor_pressure_reading, indoor_humidity_reading)
+    display_forecast(0, 30)
+    display_indoor(WIDTH - WIDTH//2, 30, indoor_light_reading, indoor_temp_reading, indoor_pressure_reading, indoor_humidity_reading)
     print("Display update...")
     graphics.update()
 
