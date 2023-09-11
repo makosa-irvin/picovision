@@ -111,6 +111,16 @@ class Sensor:
         return value
 
     def draw_graph(self, graphics, x, y, w, h, bar_color, caption_color, bar_width=4, bar_margin=2):
+        # draw and label y and x axis
+        graphics.set_pen(caption_color)
+        graphics.text("Time", x + (w//2), y + h + 5, scale=1)
+        graphics.line(x, y + h, x, y)
+        graphics.line(x - 5, y + 5, x, y)
+        graphics.line(x + 5, y + 5, x, y)
+        graphics.line(x, y + h, x + w, y + h)
+        graphics.line(x + w - 5, y + h - 5, x + w, y + h)
+        graphics.line(x + w - 5, y + h + 5, x + w, y + h)
+        
         bar_spacing = bar_width + bar_margin
         graphics.set_pen(bar_color)
 
@@ -120,15 +130,27 @@ class Sensor:
 
         for i in range(start_reading, end_reading):
             reading = int(self.get_scaled(int(i), h))
-            graphics.rectangle(x + bar_x, y + h - reading, bar_width, reading)
+            graphics.rectangle(x + bar_x, y + h - 10 - reading, bar_width, reading)
             bar_x += bar_spacing
 
         gavg, gmax, gmin = self.avg()
         graphics.set_pen(caption_color)
-        graphics.text(f"{self.caption}", x , y, scale=2)
+        graphics.text(f"{self.caption}", x, y, scale=2)
         graphics.text(f"avg: {gavg:.2f}", x, y + 16, scale=1)
-        graphics.text(f"max: {gmax:.2f}", x, y + 32, scale=1)
-        graphics.text(f"min: {gmin:.2f}", x, y + 48, scale=1)
+        graphics.text(f"max: {gmax:.2f}", x + 80, y + 16, scale=1)
+        graphics.text(f"min: {gmin:.2f}", x + 160, y + 16, scale=1)
+        
+#     def draw_graph(self, graphics, x, y, w, h, bar_color, caption_color, bar_width=4, bar_margin=2):
+#         # draw and label y and x axis
+#         graphics.set_pen(WHITE)
+#         graphics.text("Time", x + (w//2), y + h + 5)
+#         graphics.line(x, y + h, x, y)
+#         graphics.line(x - 10, y + 10, x, y)
+#         graphics.line(x + 10, y + 10, x, y)
+#         graphics.line(x, y + h, x + w, y + h)
+#         graphics.line(x + w - 10, y + h - 10, x + w, y + h)
+#         graphics.line(x + w - 10, y + h + 10, x + w, y + h)
+        
 
     def get_current_reading(self):
         gavg, gmax, gmin = self.avg()

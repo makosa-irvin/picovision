@@ -31,9 +31,16 @@ graphics.update()
 
 print("Cleared...")
 
-device = (
+devices = (
     Device(
         'enviro-indoor',
+        Sensor("Light", 160, IRRADIANCE, drange=(0, 150)),
+        Sensor("Temp", 160, TEMPERATURE, drange=(20, 40)),
+        Sensor("Pressure", 160, PRESSURE, drange=(1000, 1100)),
+        Sensor("Humidity", 160, HUMIDITY, drange=(0, 100))
+    ),
+    Device(
+        'enviro-weather',
         Sensor("Light", 160, IRRADIANCE, drange=(0, 150)),
         Sensor("Temp", 160, TEMPERATURE, drange=(20, 40)),
         Sensor("Pressure", 160, PRESSURE, drange=(1000, 1100)),
@@ -44,7 +51,8 @@ device = (
 async def main():
     while True:
        
-        await device.update()
+        for device in devices:
+            await device.update()
 
         await refresh_display()
         await asyncio.sleep_ms(1000)
@@ -56,15 +64,23 @@ async def refresh_display():
     graphics.set_pen(BLACK)
     graphics.clear()
     W = int(WIDTH // 2)
-    H = int(HEIGHT // 2)
+    H = int(HEIGHT // 4)
 
     GW = W - 4
     GH = H - 4
     
-    device.sensors[0].draw_graph(graphics, 0+2, 0+2, GW, GH, BLUE, WHITE)
-    device.sensors[1].draw_graph(graphics, W+2, 0+2, GW, GH, RED, WHITE)
-    device.sensors[2].draw_graph(graphics, 0+2, H+2, GW, GH, GREEN, WHITE)
-    device.sensors[3].draw_graph(graphics, W+2, H+2, GW, GH, TEAL, WHITE)
+    devices[0].sensors[0].draw_graph(graphics, 0+2, 0+2, GW, GH, BLUE, WHITE)
+    devices[0].sensors[1].draw_graph(graphics, W+2, 0+2, GW, GH, RED, WHITE)
+    devices[0].sensors[2].draw_graph(graphics, 0+2, H+2, GW, GH, GREEN, WHITE)
+    devices[0].sensors[3].draw_graph(graphics, W+2, H+2, GW, GH, TEAL, WHITE)
+    graphics.set_pen(WHITE)
+    graphics.line(0, HEIGHT//2, WIDTH, HEIGHT//2)
+    devices[1].sensors[0].draw_graph(graphics, 0+2, (H*2)+0+2, GW, GH, BLUE, WHITE)
+    devices[1].sensors[1].draw_graph(graphics, W+2, (H*2)+0+2, GW, GH, RED, WHITE)
+    devices[1].sensors[2].draw_graph(graphics, 0+2, (H*2)+H+2, GW, GH, GREEN, WHITE)
+    devices[1].sensors[3].draw_graph(graphics, W+2, (H*2)+H+2, GW, GH, TEAL, WHITE)
+    
+    
 
     print("Display update...")
     graphics.update()

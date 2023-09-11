@@ -180,7 +180,7 @@ def display_indoor(x, y, light, temp, pressure, hum):
     
 def display_outdoor(x, y, light, temp, pressure, hum):
     graphics.set_pen(YELLOW)
-    graphics.rectangle(x, y, WIDTH//3, HEIGHT)
+    graphics.rectangle(x, y, WIDTH//2, HEIGHT)
     
     graphics.set_pen(WHITE)
     graphics.text("INDOOR", x, y, scale=2)
@@ -253,9 +253,9 @@ async def main():
     while True:
         get_data()
         
-        await devices[0].update()
-#         for device in devices:
-#             await device.update()
+#         await devices[0].update()
+        for device in devices:
+            await device.update()
 
         
         await refresh_display()
@@ -277,13 +277,13 @@ async def refresh_display():
     indoor_pressure_reading = devices[0].sensors[2].get_current_reading()
     indoor_humidity_reading = devices[0].sensors[3].get_current_reading()
     
-#     weather_light_reading = devices[1].sensors[0].get_current_reading()
-#     weather_temp_reading = devices[1].sensors[1].get_current_reading()
-#     weather_pressure_reading = devices[1].sensors[2].get_current_reading()
-#     weather_humidity_reading = devices[1].sensors[3].get_current_reading()
-#     
-#     display_weather(0, 30, weather_light_reading, weather_temp_reading, weather_pressure_reading, weather_humidity_reading)
-    display_forecast(0, 30)
+    weather_light_reading = devices[1].sensors[0].get_current_reading()
+    weather_temp_reading = devices[1].sensors[1].get_current_reading()
+    weather_pressure_reading = devices[1].sensors[2].get_current_reading()
+    weather_humidity_reading = devices[1].sensors[3].get_current_reading()
+    
+    display_outdoor(0, 30, weather_light_reading, weather_temp_reading, weather_pressure_reading, weather_humidity_reading)
+#     display_forecast(0, 30)
     display_indoor(WIDTH - WIDTH//2, 30, indoor_light_reading, indoor_temp_reading, indoor_pressure_reading, indoor_humidity_reading)
     print("Display update...")
     graphics.update()
